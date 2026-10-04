@@ -1,81 +1,71 @@
 # Support Ticket Dashboard
 
-A full-stack support queue built with React and Express. Create tickets, review status counts, filter the queue, and move tickets from open to in progress to resolved.
+**A clear place to manage customer requests.**
 
-## What this demonstrates
+A support dashboard for creating customer tickets, organizing the queue, and tracking each request from open to resolved.
 
-- React components and hooks for forms, loading/error states, filters, and ticket updates.
-- A layered Express API: controllers → services → repository, with Joi request validation.
-- Rule-based priority suggestions from ticket text, shown while composing a ticket.
-- OpenAPI documentation, backend unit/API tests, frontend component tests, and Docker packaging.
+Built around a familiar support-team workflow, with a React interface and an Express API behind it.
 
-This is a portfolio/demo application. Storage is **in memory** and resets on backend restart. Priority suggestions use keyword matching, not a trained AI model. Authentication and user roles are not implemented.
+![Create a ticket → Organize the queue → Track resolution. Conceptual workflow.](docs/overview.svg)
 
-## Run locally
+[Quick start](#try-it-locally) · [Technical guide](docs/TECHNICAL_GUIDE.md) · [Checks](https://github.com/Dhruvil151/support-ticket-dashboard/actions) · [Portfolio](https://github.com/Dhruvil151)
 
-Requires Node.js 24 and npm. From the repository root:
+## Preview
 
-~~~sh
+![Running support dashboard with seeded sample tickets, status counts, and filters.](docs/dashboard.png)
+
+Actual local application, using the repository’s fictional seed tickets.
+
+## A simple example
+
+A customer reports a checkout problem. A team member creates a ticket, reviews its suggested priority, moves it into progress, and marks it resolved once the issue is fixed.
+
+## What it does
+
+- Create tickets and update their status.
+- Filter the queue while keeping overall status counts visible.
+- Suggest a priority using explicit keyword rules.
+- Handle invalid input, loading states, and API errors.
+
+## Try it locally
+
+```sh
 npm --prefix backend ci
 npm --prefix frontend ci
-~~~
+```
 
-Start the backend and frontend in separate terminals:
+Start these in separate terminals:
 
-~~~sh
+```sh
 npm --prefix backend run dev
-~~~
+```
 
-~~~sh
+```sh
 npm --prefix frontend run dev
-~~~
+```
 
-Open http://localhost:3000. The Vite development server proxies /api to the backend on port 5000. Interactive API documentation is at http://localhost:5000/api-docs; health is at /health. No API keys or database setup are required.
+Requires Node.js 24. Open `http://localhost:3000`; API documentation is at `http://localhost:5000/api-docs`. No API keys are needed.
 
-## Run with Docker
+## How it is built
 
-~~~sh
-docker compose up --build
-~~~
+**React · JavaScript · Express · Joi · OpenAPI · Vitest · Jest · Docker**
 
-Open http://localhost:3000. Nginx serves the frontend and proxies API requests. Published ports bind to localhost for local evaluation. Stop with docker compose down.
+Controllers, services, and a repository separate HTTP handling, application behavior, and storage. This makes the current in-memory repository replaceable without moving database concerns into the UI.
 
-## API
+See the [technical guide](docs/TECHNICAL_GUIDE.md) for setup details, architecture, and implementation boundaries.
 
-- GET /api/tickets — returns tickets and global status counts; optional status=open, in-progress, or resolved.
-- POST /api/tickets — create a ticket from title, description, and optional priority.
-- PATCH /api/tickets/:id/status — update status with a JSON body such as {"status":"resolved"}.
+## Checks and evidence
 
-~~~sh
-curl -X POST http://localhost:5000/api/tickets -H 'Content-Type: application/json' -d '{"title":"Checkout error","description":"Payment failed during checkout"}'
-~~~
-
-Use Swagger UI for platform-independent request examples and validation schemas.
-
-## Tests and build
-
-~~~sh
+```sh
 npm test
 npm --prefix frontend run build
-~~~
+```
 
-The root test command runs both suites after their dependencies are installed. Tests use isolated application instances and mocked frontend API responses; they do not establish production reliability.
+Tests cover backend behavior and frontend components. Docker setup and the API contract are in the technical guide.
 
-The frontend includes an .npmrc setting to keep optional peer resolution consistent with its lockfile; use npm ci from the frontend directory or npm --prefix frontend ci as above.
+The [publication validation report](VALIDATION.md) records earlier checks and their limits. GitHub Actions records checks for subsequent commits.
 
-## Structure
+## Current scope
 
-- backend/src/domain — ticket entity and priority rules.
-- backend/src/repositories — seeded in-memory storage.
-- backend/src/services, controllers, validators — application behavior and HTTP boundary.
-- backend/tests — unit and HTTP integration tests.
-- frontend/src/components, hooks, services — UI, state, and API client.
-- frontend/tests — component and hook tests.
+Portfolio demo with seeded sample tickets. Data resets when the backend restarts. Priority suggestions are keyword rules; accounts, roles, and persistent storage are not implemented.
 
-## Design boundaries
-
-List metadata is computed across all tickets so filtered views retain accurate overall counts. A repository boundary makes a future persistent database possible without putting storage logic in controllers. Before hosting for real users, add persistence, authentication, authorization, and abuse controls. The repository contains no customer tickets or credentials.
-
-## Review results
-
-See [publication validation](VALIDATION.md) for the checks performed, fixes, and unverified integrations.
