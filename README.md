@@ -54,6 +54,20 @@ Controllers, services, and a repository separate HTTP handling, application beha
 
 See the [technical guide](docs/TECHNICAL_GUIDE.md) for setup details, architecture, and implementation boundaries.
 
+## Engineering decisions
+
+### Make storage replaceable
+
+Controllers call services, which use a ticket repository. The demo can later gain persistent storage without moving database logic into the UI. The current repository is in memory.
+
+### Validate at the API boundary
+
+Joi validates incoming requests and the API documents its contract with OpenAPI. Invalid data is rejected before application behavior runs.
+
+### Keep filtered views understandable
+
+Status counts describe the whole queue while the list can show one status. A user can filter tickets without losing the overall workload context. Priority suggestions use explicit keyword rules.
+
 ## Checks and evidence
 
 ```sh
@@ -69,3 +83,7 @@ The [publication validation report](VALIDATION.md) records earlier checks and th
 
 Portfolio demo with seeded sample tickets. Data resets when the backend restarts. Priority suggestions are keyword rules; accounts, roles, and persistent storage are not implemented.
 
+
+## License
+
+Original project code and documentation are available under the [MIT License](LICENSE). Third-party dependencies and assets retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).
